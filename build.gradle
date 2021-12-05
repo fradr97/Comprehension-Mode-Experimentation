@@ -1,0 +1,66 @@
+buildscript {
+	ext.kotlin_version = "1.3.70"
+	repositories {
+		mavenCentral()
+		maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+		maven { url "http://dl.bintray.com/jetbrains/intellij-plugin-service" }
+	}
+}
+plugins {
+	id "org.jetbrains.intellij" version "0.4.18"
+	id "org.jetbrains.kotlin.jvm" version "1.3.70"
+}
+apply plugin:"java"
+apply plugin:"kotlin"
+apply plugin:"idea"
+apply plugin:"org.jetbrains.intellij"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile "joda-time:joda-time:2.10.5"
+	compile "org.apache.commons:commons-csv:1.8"
+	testCompile "junit:junit:4.11" // also includes hamcrest-core
+	implementation group: 'com.opencsv', name: 'opencsv', version: '5.5.1'
+	implementation group: 'org.json', name: 'json', version: '20210307'
+}
+
+sourceSets {
+	main {
+		kotlin { srcDir "./src/main" }
+		resources { srcDir "./src/resources" }
+	}
+	test {
+		kotlin { srcDir "./src/test" }
+	}
+}
+
+compileKotlin {
+	kotlinOptions {
+		apiVersion = "1.3"
+		languageVersion = "1.3"
+        // Compiler flag to allow building against pre-released versions of Kotlin
+        // because IJ EAP can be built using pre-released Kotlin but it's still worth doing to check API compatibility
+        freeCompilerArgs = ["-Xskip-metadata-version-check"] 
+    }
+}
+
+intellij {
+	// To find available IDE versions see https://www.jetbrains.com/intellij-repository/releases
+	def ideVersion = System.getenv().getOrDefault("IJ_VERSION",
+			"201.6668.113" // this is the first public version with StatusBarWidgetFactory
+//			"LATEST-EAP-SNAPSHOT"
+	)
+	println("Using ide version: ${ideVersion}")
+	version ideVersion
+	// The artifact name is deliberately not "activity-tracker" because
+	// *.csv files are stored in the "activity-tracker" directory.
+	// If plugin archive has the same name, the directory will be deleted on plugin update.
+	pluginName "activity-tracker-plugin"
+    plugins = ["java", "tasks"]
+	downloadSources true
+	sameSinceUntilBuild false
+	updateSinceUntilBuild false
+}
