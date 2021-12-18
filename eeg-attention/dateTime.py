@@ -37,5 +37,23 @@ def sumTimes(dateTimeCreationFile, timeLapse):
     time_zero = dt.datetime.strptime('00:00:00:00', '%H:%M:%S:%f')"""
     
     return dateTimeCreationFile + datetime.timedelta(0, timeLapse)
-
     #return (time - time_zero + timelapse).time()
+
+
+def getDateFromString(dateString):
+    return datetime.datetime.fromisoformat(dateString)
+
+# Checks if two dates are equal accepting a 1-second time difference margin */
+def checkSameDates(dateString1, dateString2):
+    date1 = datetime.datetime.fromisoformat(dateString1)
+    date2 = datetime.datetime.fromisoformat(dateString2)
+    
+    diff = 0
+    if(date1 >= date2):
+        diff = date1 - date2
+    else:
+        diff = date2 - date1
+
+    if(dateString1 == dateString2 or diff.total_seconds() <= 1.000):
+        return True
+    return False

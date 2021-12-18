@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np
 import csv
 import dateTime as dt
@@ -8,11 +9,11 @@ Al secondo 5: secondi valutati [1,5] valori da [300 a 300*5]
 Al secondo 6: sec valutati [2,6] valori da [300*2 a 300*6]
 """
 
-#Header: Time,LE,F4,C4,P4,P3,C3,F3,Trigger,Time_Offset,ADC_Status,ADC_Sequence,Event,Comments
+#Header caschetto csv: Time,LE,F4,C4,P4,P3,C3,F3,Trigger,Time_Offset,ADC_Status,ADC_Sequence,Event,Comments
 
 def compute(dateTimeCreationFile, inputFilePath, outputFilePath):
     TIMELAPSE = 0
-
+    
     LE = 1
     F4 = 2
     C4 = 3
@@ -34,7 +35,7 @@ def compute(dateTimeCreationFile, inputFilePath, outputFilePath):
     absoluteArray = []
     computeBand = dict()
 
-    outputFile = open(outputFilePath, 'w')
+    outputFile = open(outputFilePath, 'w', newline='')
     writer = csv.writer(outputFile)
     
     header = ['Timestamp', 'Delta_LE', 'Theta_LE', 'Alpha_LE', 'Beta_LE', 'Gamma_LE',
@@ -44,7 +45,8 @@ def compute(dateTimeCreationFile, inputFilePath, outputFilePath):
     'Delta_P3', 'Theta_P3', 'Alpha_P3', 'Beta_P3', 'Gamma_P3',
     'Delta_C3', 'Theta_C3', 'Alpha_C3', 'Beta_C3', 'Gamma_C3',
     'Delta_F3', 'Theta_F3', 'Alpha_F3', 'Beta_F3', 'Gamma_F3',
-    'Delta_ABS', 'Theta_ABS', 'Alpha_ABS', 'Beta_ABS', 'Gamma_ABS']
+    'Delta_Global', 'Theta_Global', 'Alpha_Global', 'Beta_Global', 
+    'Gamma_Global', 'Engagement', 'Concentration', 'Workload']
     writer.writerow(header)
 
     with open(inputFilePath, 'r') as file:
@@ -53,7 +55,7 @@ def compute(dateTimeCreationFile, inputFilePath, outputFilePath):
         indexFrom = (index * fs)
 
         while indexFrom < len(dataList):
-            indexTo = fs * (sec + index)
+            indexTo = int(fs * (sec + index))
 
             if indexTo >= len(dataList):
                 indexTo = len(dataList) - 1
@@ -77,70 +79,81 @@ def compute(dateTimeCreationFile, inputFilePath, outputFilePath):
                 absoluteArray.append(float(dataList[indexFrom][C3]))
                 absoluteArray.append(float(dataList[indexFrom][F3]))
                 indexFrom += 1
-            
-            row = []
 
             """ Band calculation on single sensors """
             computeBand = computeBands(LEArray)
             dateTime = dt.dataCreationAddedToTimeLaps(dateTimeCreationFile, float(dataList[indexTo][TIMELAPSE]))
-            row.append(dateTime)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaLE = str(computeBand['Delta'])
+            ThetaLE = str(computeBand['Theta'])
+            alphaLE = str(computeBand['Alpha'])
+            betaLE = str(computeBand['Beta'])
+            gammaLE = str(computeBand['Gamma'])
 
             computeBand = computeBands(F4Array)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaF4 = str(computeBand['Delta'])
+            ThetaF4 = str(computeBand['Theta'])
+            alphaF4 = str(computeBand['Alpha'])
+            betaF4 = str(computeBand['Beta'])
+            gammaF4 = str(computeBand['Gamma'])
 
             computeBand = computeBands(C4Array)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaC4 = str(computeBand['Delta'])
+            ThetaC4 = str(computeBand['Theta'])
+            alphaC4 = str(computeBand['Alpha'])
+            betaC4 = str(computeBand['Beta'])
+            gammaC4 = str(computeBand['Gamma'])
 
             computeBand = computeBands(P4Array)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaP4 = str(computeBand['Delta'])
+            ThetaP4 = str(computeBand['Theta'])
+            alphaP4 = str(computeBand['Alpha'])
+            betaP4 = str(computeBand['Beta'])
+            gammaP4 = str(computeBand['Gamma'])
 
             computeBand = computeBands(P3Array)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaP3 = str(computeBand['Delta'])
+            ThetaP3 = str(computeBand['Theta'])
+            alphaP3 = str(computeBand['Alpha'])
+            betaP3 = str(computeBand['Beta'])
+            gammaP3 = str(computeBand['Gamma'])
 
             computeBand = computeBands(C3Array)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaC3 = str(computeBand['Delta'])
+            ThetaC3 = str(computeBand['Theta'])
+            alphaC3 = str(computeBand['Alpha'])
+            betaC3 = str(computeBand['Beta'])
+            gammaC3 = str(computeBand['Gamma'])
 
             computeBand = computeBands(F3Array)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaF3 = str(computeBand['Delta'])
+            ThetaF3 = str(computeBand['Theta'])
+            alphaF3 = str(computeBand['Alpha'])
+            betaF3 = str(computeBand['Beta'])
+            gammaF3 = str(computeBand['Gamma'])
 
             """ Band calculation on all sensors """
             computeBand = computeBands(absoluteArray)
-            row.append(str(computeBand['Delta']))
-            row.append(str(computeBand['Theta']))
-            row.append(str(computeBand['Alpha']))
-            row.append(str(computeBand['Beta']))
-            row.append(str(computeBand['Gamma']))
+            deltaAbs = str(computeBand['Delta'])
+            ThetaAbs = str(computeBand['Theta'])
+            alphaAbs = str(computeBand['Alpha'])
+            betaAbs = str(computeBand['Beta'])
+            gammaAbs = str(computeBand['Gamma'])
 
-            writer.writerow(row)
+            """" Engagement - Concentration - Workload """
+            engagement = 100 * (computeBand['Beta'] / (computeBand['Alpha'] + computeBand['Theta']))
+            concentration = 100 * (computeBand['Beta'] / computeBand['Alpha'])
+            workload = 100 * (computeBand['Theta'] / computeBand['Alpha'])
+
+            writer.writerow([dateTime[:-3], deltaLE, ThetaLE, alphaLE, betaLE, gammaLE, 
+                deltaF4, ThetaF4, alphaF4, betaF4, gammaF4, 
+                deltaC4, ThetaC4, alphaC4, betaC4, gammaC4, 
+                deltaP4, ThetaP4, alphaP4, betaP4, gammaP4,
+                deltaP3, ThetaP3, alphaP3, betaP3, gammaP3,
+                deltaC3, ThetaC3, alphaC3, betaC3, gammaC3,
+                deltaF3, ThetaF3, alphaF3, betaF3, gammaF3,
+                deltaAbs, ThetaAbs, alphaAbs, betaAbs, gammaAbs,
+                engagement, concentration, workload])
+            
             LEArray.clear()
             F4Array.clear()
             C4Array.clear()
@@ -150,12 +163,11 @@ def compute(dateTimeCreationFile, inputFilePath, outputFilePath):
             F3Array.clear()
             absoluteArray.clear()
             
-            index += 1
-            indexFrom = (index * fs)
+            index += 0.5    #each 0.5 seconds
+            indexFrom = int((index * fs))
     outputFile.close()
 
 
-""" TODO: l'array alla fine non avrà mai 1200 valori, pertanto non riesce a calcolare la media!! Onda Alpha: NaN """
 def computeBands(data):
     fs = 300
 
@@ -181,16 +193,3 @@ def computeBands(data):
         eeg_band_fft[band] = np.mean(fft_vals[freq_ix])
 
     return eeg_band_fft
-
-
-"""
-# Plot the data (using pandas here cause it's easy)
-import pandas as pd
-import matplotlib.pyplot as plt
-
-df = pd.DataFrame(columns=['band', 'val'])
-df['band'] = eeg_bands.keys()
-df['val'] = [eeg_band_fft[band] for band in eeg_bands]
-ax = df.plot.bar(x='band', y='val', legend=False)
-ax.set_xlabel("EEG band")
-ax.set_ylabel("Mean band Amplitude")"""
